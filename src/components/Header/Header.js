@@ -8,7 +8,7 @@ const Header = ({ title, onToggleForm, showAddTask }) => {
   return (
     <header className="header">
       {/* <h2 style={headerStyle}>Hello {title}</h2> */}
-      <h2>Hello {title}</h2>
+      <h2>{title}</h2>
       {location.pathname === "/" && (
         <Button
           onClick={onToggleForm}
@@ -33,7 +33,7 @@ const Header = ({ title, onToggleForm, showAddTask }) => {
 // It could be better to use default arguments
 // instead of "defaultProps" property
 Header.defaultProps = {
-  title: "Task Tracker",
+  title: "To do list",
 };
 
 // --- PROP TYPES ---
