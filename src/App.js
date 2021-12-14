@@ -7,6 +7,7 @@ import { taskList } from "./components/Tasks/TasksData";
 
 function App() {
   const [tasks, setTasks] = useState(taskList);
+  const [showAddTask, setShowAddTask] = useState(false);
 
   const deleteTask = (id) => {
     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
@@ -27,10 +28,17 @@ function App() {
     });
   };
 
+  const toggleFormVisualization = () =>
+    setShowAddTask((prevShowForm) => !prevShowForm);
+
   return (
     <div className="container">
-      <Header />
-      <AddTask onAddTask={addTask} />
+      <Header
+        onToggleForm={toggleFormVisualization}
+        showAddTask={showAddTask}
+      />
+      {/* There is a controversy of wheter to use "&&" instead of ternary expression*/}
+      {showAddTask ? <AddTask onAddTask={addTask} /> : null}
       {tasks.length ? (
         <Tasks
           tasks={tasks}
