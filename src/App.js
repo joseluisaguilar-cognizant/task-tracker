@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import axios from "axios";
 
 import Header from "./components/Header/Header";
 import Tasks from "./components/Tasks/Tasks";
 import AddTask from "./components/AddTask/AddTask";
+import Footer from "./components/Footer/Footer";
+import About from "./components/About/About";
 
 const TASK_URL = "http://localhost:5000/tasks";
 
@@ -16,12 +19,6 @@ function App() {
   const [showAddTask, setShowAddTask] = useState(false);
 
   useEffect(() => {
-    // axios.get(TASK_URL, headers).then((res) => {
-    //   console.log(res.json());
-    //   setTasks(res.data);
-    // });
-
-    // -> It would be better using async-await
     const storeTasks = async () => {
       const tasks = await fetchTasks();
 
@@ -60,8 +57,6 @@ function App() {
   const toggleReminder = async (id) => {
     const taskToToggle = await fetchSpecificTask(id);
 
-    console.log(taskToToggle);
-
     const res = await axios.put(`${TASK_URL}/${id}`, {
       ...taskToToggle,
       reminder: !taskToToggle.reminder,
@@ -78,23 +73,37 @@ function App() {
     setShowAddTask((prevShowForm) => !prevShowForm);
 
   return (
-    <div className="container">
-      <Header
-        onToggleForm={toggleFormVisualization}
-        showAddTask={showAddTask}
-      />
-      {/* There is a controversy of wheter to use "&&" instead of ternary expression*/}
-      {showAddTask ? <AddTask onAddTask={addTask} /> : null}
-      {tasks.length ? (
-        <Tasks
-          tasks={tasks}
-          onDelete={deleteTask}
-          onToggleReminder={toggleReminder}
+    <Router>
+      <div className="container">
+        <Header
+          onToggleForm={toggleFormVisualization}
+          showAddTask={showAddTask}
         />
-      ) : (
-        <p>No tasks to show</p>
-      )}
-    </div>
+        <Routes>
+          <Route
+            path="/"
+            exact
+            element={
+              <>
+                {showAddTask ? <AddTask onAddTask={addTask} /> : null}
+                {/* There is a controversy of wheter to use "&&" instead of ternary expression*/}
+                {tasks.length ? (
+                  <Tasks
+                    tasks={tasks}
+                    onDelete={deleteTask}
+                    onToggleReminder={toggleReminder}
+                  />
+                ) : (
+                  <p>No tasks to show</p>
+                )}
+              </>
+            }
+          />
+          <Route path="/about" element={<About />} />
+        </Routes>
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
