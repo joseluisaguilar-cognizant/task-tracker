@@ -8,6 +8,8 @@ import AddTask from "./components/AddTask/AddTask";
 import Footer from "./components/Footer/Footer";
 import About from "./components/About/About";
 
+import Task from "./interfaces/taskInterface";
+
 const TASK_URL = "http://localhost:5000/tasks";
 
 const headers = {
@@ -15,62 +17,64 @@ const headers = {
 };
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-  const [showAddTask, setShowAddTask] = useState(false);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [showAddTask, setShowAddTask] = useState<boolean>(false);
 
   useEffect(() => {
-    const storeTasks = async () => {
+    const storeTasks = async (): Promise<void> => {
       const tasks = await fetchTasks();
 
       setTasks(tasks);
     };
 
-    storeTasks();
+    void storeTasks();
   }, []);
 
-  const fetchTasks = async () => {
+  const fetchTasks = async (): Promise<Task[]> => {
     const res = await axios.get(TASK_URL, {
       headers,
     });
     return res.data;
   };
 
-  const fetchSpecificTask = async (id) => {
+  const fetchSpecificTask = async (id: number): Promise<Task> => {
     const res = await axios.get(`${TASK_URL}/${id}`, { headers });
     return res.data;
   };
 
-  const addTask = async (task) => {
-    const { data: newTask } = await axios.post(TASK_URL, task, { headers });
-
-    setTasks((prevTasks) => {
-      return [...prevTasks, newTask];
+  const addTask = async (task: string): Promise<void> => {
+    const { data: newTask } = await axios.post<Task>(TASK_URL, task, {
+      headers,
     });
+
+    setTasks((prevTasks: Task[]) => [...prevTasks, newTask]);
   };
 
-  const deleteTask = (id) => {
-    axios.delete(`${TASK_URL}/${id}`, { headers });
+  const deleteTask = (id: number): void => {
+    axios.delete<void>(`${TASK_URL}/${id}`, { headers });
 
-    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+    setTasks((prevTasks: Task[]) =>
+      prevTasks.filter((task: Task): boolean => task.id !== id)
+    );
   };
 
-  const toggleReminder = async (id) => {
+  const toggleReminder = async (id: number): Promise<void> => {
     const taskToToggle = await fetchSpecificTask(id);
 
-    const res = await axios.put(`${TASK_URL}/${id}`, {
+    const res = await axios.put<Task>(`${TASK_URL}/${id}`, {
       ...taskToToggle,
       reminder: !taskToToggle.reminder,
     });
 
     const taskUpdated = res.data;
 
-    setTasks((prevTaks) => {
-      return prevTaks.map((task) => (task.id === id ? taskUpdated : task));
-    });
+    setTasks((prevTaks: Task[]): Task[] =>
+      prevTaks.map((task) => (task.id === id ? taskUpdated : task))
+    );
   };
 
-  const toggleFormVisualization = () =>
-    setShowAddTask((prevShowForm) => !prevShowForm);
+  const toggleFormVisualization = (): void =>
+    setShowAddTask((prevShowForm: boolean): boolean => !prevShowForm);
 
   return (
     <Router>
@@ -82,7 +86,6 @@ function App() {
         <Routes>
           <Route
             path="/"
-            exact
             element={
               <>
                 {showAddTask ? <AddTask onAddTask={addTask} /> : null}

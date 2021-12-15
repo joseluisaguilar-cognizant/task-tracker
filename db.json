@@ -9,7 +9,7 @@
     {
       "text": "Read read documentation",
       "day": "Dec 16th at 10:00pm",
-      "reminder": false,
+      "reminder": true,
       "id": 3
     }
   ]
